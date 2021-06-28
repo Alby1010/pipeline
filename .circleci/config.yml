@@ -1,7 +1,5 @@
 version: 2
-
-  
-
+jobs:
   deploy_to_master:
     docker:
       - image: google/cloud-sdk
