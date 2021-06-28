@@ -1,58 +1,51 @@
-# PHP CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-php/ for more details
-#
 version: 2
-jobs:
-  build:
+
+  
+
+  deploy_to_master:
     docker:
-      # Specify the version you desire here
-      - image: circleci/php:7.1-node-browsers
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # Using the RAM variation mitigates I/O contention
-      # for database intensive operations.
-      # - image: circleci/mysql:5.7-ram
-      #
-      # - image: redis:2.8.19
-
+      - image: google/cloud-sdk
     steps:
       - checkout
+      
+      - attach_workspace:
+          at: /home/circleci
+          
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+          
+      - run: 
+          name: Setup Google Cloud SDK
+          command: |
+            echo $GOOGLE_DM_CDS_DEV_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud --quiet config set project ${GOOGLE_DM_CDS_DEV_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_DM_CDS_DEV_COMPUTE_ZONE}
+            gcloud --quiet container clusters get-credentials ${GOOGLE_DM_CDS_DEV_CLUSTER_NAME}
+      - run: 
+          name: Docker build and push 
+          command: |
+            IMAGE_TAG="training-1.${CIRCLE_BUILD_NUM}"
+            gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://eu.gcr.io
+            docker build -t training --build-arg configuration=training .
+            docker tag training eu.gcr.io/${GOOGLE_DM_CDS_DEV_PROJECT_ID}/training:$IMAGE_TAG
+            docker push eu.gcr.io/${GOOGLE_DM_CDS_DEV_PROJECT_ID}/training:$IMAGE_TAG
+      - run: 
+          name: Deploy to Kubernetes
+          command: |
+            IMAGE_TAG="training-1.${CIRCLE_BUILD_NUM}"
+            kubectl set image deployment/admin-web admin-web=eu.gcr.io/${GOOGLE_DM_CDS_DEV_PROJECT_ID}/admin-web:$IMAGE_TAG
+            kubectl rollout status deployment/training          
 
-      - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
-      - run: sudo docker-php-ext-install zip
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            # "composer.lock" can be used if it is committed to the repo
-            - v1-dependencies-{{ checksum "composer.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
-      - run: composer install -n --prefer-dist
-
-      - save_cache:
-          key: v1-dependencies-{{ checksum "composer.json" }}
-          paths:
-            - ./vendor
-      - restore_cache:
-          keys:
-            - node-v1-{{ checksum "package.json" }}
-            - node-v1-
-      - run: yarn install
-      - save_cache:
-          key: node-v1-{{ checksum "package.json" }}
-          paths:
-            - node_modules
-
-      # prepare the database
-      - run: touch storage/testing.sqlite
-      - run: php artisan migrate --env=testing --database=sqlite_testing --force
-
-      # run tests with phpunit or codecept
-      #- run: ./vendor/bin/phpunit
-      - run: ./vendor/bin/codecept build
-      - run: ./vendor/bin/codecept run
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:  
+      - build-master:
+          filters:
+            branches:
+              only:
+              - master
+      
