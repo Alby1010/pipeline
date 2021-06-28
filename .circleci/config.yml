@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  deploy_to_master:
+  build_and_deploy:
     docker:
       - image: google/cloud-sdk
     steps:
