@@ -32,7 +32,7 @@ jobs:
           name: Deploy to Kubernetes 
           command: |
             IMAGE_TAG="php-deployment-1.${CIRCLE_BUILD_NUM}"
-            kubectl set image deployment/php-deployment  php-deployment=eu.gcr.io/${GOOGLE_DM_CDS_DEV_PROJECT_ID}/php-deployment:IMAGE_TAG
+            kubectl set image deployment/php-deployment  php-deployment=eu.gcr.io/${GOOGLE_DM_CDS_DEV_PROJECT_ID}/php-deployment:{CIRCLE_PREVIOUS_BUILD_NUM}
             kubectl rollout status deployment/php-deployment    
             kubectl get po -o wide 
   
