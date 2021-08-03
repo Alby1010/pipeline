@@ -71,17 +71,17 @@ jobs:
           name: Docker build and push
           command: |
             IMAGE_TAG="php-deployment-1.${CIRCLE_BUILD_NUM}"
-            gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://eu.gcr.io
+            #gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://eu.gcr.io
             docker build -t php-deployment .
-            docker tag php-deployment  eu.gcr.io/training-318205/php-deployment:$IMAGE_TAG
-            docker push eu.gcr.io/training-318205/php-deployment:$IMAGE_TAG
+            docker tag php-deployment  ndjcndcj/test/:$IMAGE_TAG
+            docker tag ndjcndcj/test/:$IMAGE_TAG
+            #docker push eu.gcr.io/training-318205/php-deployment:$IMAGE_TAG
       - run: 
           name: Deploy to Kubernetes 
           command: |
             IMAGE_TAG="php-deployment-1.${CIRCLE_BUILD_NUM}"
-            kubectl delete deployment/php-deployment
-            kubectl create  deployment  php-deployment  --image=eu.gcr.io/training-318205/php-deployment:$IMAGE_TAG
-            #kubectl rollout status deployment/php-deployment    
+            kubectl set image deployment/php-deployment php-deployment=ndjcndcj/test:$IMAGE_TAG
+            kubectl rollout status deployment/php-deployment --timeout=2m
             kubectl get po -o wide            
 
 
