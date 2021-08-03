@@ -1,9 +1,0 @@
-apiVersion: getambassador.io/v2
-kind: Mapping
-metadata:
-  name: auth-mapping-auth
-spec:
-  prefix: /
-  rewrite: /
-  service: php-service  
-  timeout_ms: 30000
