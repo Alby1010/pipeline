@@ -73,8 +73,8 @@ jobs:
             IMAGE_TAG="php-deployment-1.${CIRCLE_BUILD_NUM}"
             #gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://eu.gcr.io
             docker build -t php-deployment .
-            docker tag php-deployment  ndjcndcj/test/:$IMAGE_TAG
-            docker tag ndjcndcj/test/:$IMAGE_TAG
+            docker tag php-deployment  ndjcndcj/test:$IMAGE_TAG
+            docker tag ndjcndcj/test:$IMAGE_TAG
             #docker push eu.gcr.io/training-318205/php-deployment:$IMAGE_TAG
       - run: 
           name: Deploy to Kubernetes 
