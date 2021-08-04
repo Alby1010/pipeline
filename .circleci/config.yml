@@ -86,6 +86,8 @@ jobs:
 
 
   test:
+    docker:
+      - image: google/cloud-sdk
     steps:
       - setup_remote_docker:
          version: 19.03.13
