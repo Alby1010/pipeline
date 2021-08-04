@@ -84,9 +84,11 @@ jobs:
             kubectl rollout status deployment/php-deployment  --timeout=2m
             kubectl get po -o wide            
 test:
-  name: test
-  command: |
-      echo "testing"
+  docker:
+    - image: google/cloud-sdk
+  steps:
+    - checkout
+  
    
 
 workflows:
@@ -108,4 +110,4 @@ workflows:
           filters:
             branches:
               only:
-              - branch1        
+              - branch1     
