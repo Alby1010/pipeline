@@ -51,8 +51,8 @@ jobs:
       - attach_workspace:
           at: /home/circleci
           
-      #- setup_remote_docker:
-       #   version: 19.03.13
+      - setup_remote_docker:
+          version: 19.03.13
           
       - run: 
           name: Setup Google Cloud SDK
