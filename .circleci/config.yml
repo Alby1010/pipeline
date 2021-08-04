@@ -57,8 +57,8 @@ jobs:
       - run: 
           name: Setup Google Cloud SDK
           command: |
-            echo $GOOGLE_DM_TEST_SERVICE_KEY > ${HOME}/gcloud-service-key.json
-            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            echo $GOOGLE_DM_TEST_SERVICE_KEY > ${HOME}/gcloud-service-key.json   
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json   #gcloud auth activate-service-account ACCOUNT --key-file=KEY-FILE
             gcloud --quiet config set project ${GOOGLE_DM_TEST_PROJECT_ID}
             gcloud --quiet config set compute/zone ${GOOGLE_DM_TEST_COMPUTE_ZONE}
             gcloud --quiet container clusters get-credentials ${GOOGLE_DM_TEST_CLUSTER_NAME}
@@ -94,7 +94,8 @@ jobs:
       - run:
          name: testing
          command: |
-            echo "testing......" 
+            echo $HOME
+            echo $CIRCLE_PROJECT_USERNAME
    
 
 workflows:
