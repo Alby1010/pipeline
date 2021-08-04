@@ -38,11 +38,51 @@ jobs:
           command: |
             IMAGE_TAG="php-deployment-1.${CIRCLE_BUILD_NUM}"
             kubectl delete deployment/php-deployment
-            kubectl create  deployment  php-deployment  --image=eu.gcr.io/training-318205/php-deployment:$IMAGE_TAG
+            kubectl create  deployment  php-deployment  --php-container=eu.gcr.io/training-318205/php-deployment:$IMAGE_TAG
             #kubectl rollout status deployment/php-deployment    
             kubectl get po -o wide 
   
-             
+  deploy_to_branch1:
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - checkout
+      
+      - attach_workspace:
+          at: /home/circleci
+          
+      - setup_remote_docker:
+          version: 19.03.13
+          
+      - run: 
+          name: Setup Google Cloud SDK
+          command: |
+            echo $GOOGLE_DM_TEST_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud --quiet config set project ${GOOGLE_DM_TEST_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_DM_TEST_COMPUTE_ZONE}
+            gcloud --quiet container clusters get-credentials ${GOOGLE_DM_TEST_CLUSTER_NAME}
+      - run:
+          name: Docker Log In
+          command: |
+            docker login -u ndjcndcj  -p kochuniravath1010      
+            
+      - run: 
+          name: Docker build and push
+          command: |
+            IMAGE_TAG="php-deployment-1.${CIRCLE_BUILD_NUM}"
+            #gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://eu.gcr.io
+            docker build -t php-deployment .
+            docker tag php-deployment  ndjcndcj/test:$IMAGE_TAG
+            docker push ndjcndcj/test:$IMAGE_TAG
+            #docker push eu.gcr.io/training-318205/php-deployment:$IMAGE_TAG
+      - run: 
+          name: Deploy to Kubernetes 
+          command: |
+            IMAGE_TAG="php-deployment-1.${CIRCLE_BUILD_NUM}"
+            kubectl set image deployment/php-container php-container=ndjcndcj/test:$IMAGE_TAG
+            kubectl rollout status deployment/php-container --timeout=2m
+            kubectl get po -o wide            
 
 
 workflows:
@@ -55,4 +95,8 @@ workflows:
               only:
               - master
 
-                
+      - deploy_to_branch1:
+          filters:
+            branches:
+              only:
+              - branch1       
