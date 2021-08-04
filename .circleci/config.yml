@@ -98,11 +98,7 @@ workflows:
             branches:
               only:
               - master
-      - test:
-          filters:
-            branches:
-              only:
-              - branch1
+      
       - deploy_to_branch1:
           filters:
             branches:
