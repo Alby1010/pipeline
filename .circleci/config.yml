@@ -91,6 +91,8 @@ jobs:
     steps:
       - setup_remote_docker:
          version: 19.03.13
+      - attach_workspace:
+         at: /home/circleci
       - run:
          name: testing
          command: |
