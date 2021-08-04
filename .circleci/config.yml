@@ -84,13 +84,21 @@ jobs:
             kubectl rollout status deployment/php-deployment  --timeout=2m
             kubectl get po -o wide            
 
-  
+  test:
+    name: test
+    command: |
+      echo "testing"
    
 
 workflows:
   version: 2
   test_build_deploy:
     jobs:
+      - test:
+         filters:
+            branches:
+              only:
+              - branch1
       - deploy_to_master:
           filters:
             branches:
