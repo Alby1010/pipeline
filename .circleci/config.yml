@@ -104,8 +104,6 @@ workflows:
               only:
               - branch1
       - deploy_to_branch1:
-          requires:
-          - test
           filters:
             branches:
               only:
