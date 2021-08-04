@@ -38,7 +38,7 @@ jobs:
           command: |
             IMAGE_TAG="php-deployment-1.${CIRCLE_BUILD_NUM}"
             kubectl delete deployment/php-deployment
-            kubectl create  deployment  php-deployment  --php-container=eu.gcr.io/training-318205/php-deployment:$IMAGE_TAG
+            kubectl create  deployment  php-deployment  php-container=eu.gcr.io/training-318205/php-deployment:$IMAGE_TAG
             #kubectl rollout status deployment/php-deployment    
             kubectl get po -o wide 
   
@@ -80,9 +80,13 @@ jobs:
           name: Deploy to Kubernetes 
           command: |
             IMAGE_TAG="php-deployment-1.${CIRCLE_BUILD_NUM}"
-            kubectl set image deployment/php-container php-container=ndjcndcj/test:$IMAGE_TAG
-            kubectl rollout status deployment/php-container --timeout=2m
-            kubectl get po -o wide            
+            kubectl set image deployment/php-deployment  php-container=ndjcndcj/test:$IMAGE_TAG
+            kubectl rollout status deployment/php-deployment  --timeout=2m
+            kubectl get po -o wide       
+  test:
+    name: test
+    command: |
+      echo "testing"              
 
 
 workflows:
@@ -94,8 +98,14 @@ workflows:
             branches:
               only:
               - master
-
+      - test:
+          filters:
+            branches:
+              only:
+              - branch1
       - deploy_to_branch1:
+          requires:
+          - test
           filters:
             branches:
               only:
