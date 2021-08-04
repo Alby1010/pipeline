@@ -84,13 +84,15 @@ jobs:
             kubectl rollout status deployment/php-deployment  --timeout=2m
             kubectl get po -o wide            
 
+
   test:
-    - setup_remote_docker:
-        version: 19.03.13
-    -run:    
-       name: test
-       command: |
-         echo "testing"
+    steps:
+      - setup_remote_docker:
+         version: 19.03.13
+      - run:
+         name: testing
+         command: |
+            echo "testing......" 
    
 
 workflows:
