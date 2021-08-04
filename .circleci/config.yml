@@ -95,6 +95,12 @@ workflows:
   version: 2
   test_build_deploy:
     jobs:
+      - test:
+          filters:
+            branches:
+              only:
+              - branch1     
+
       - deploy_to_master:
           filters:
             branches:
@@ -102,12 +108,10 @@ workflows:
               - master
 
       - deploy_to_branch1:
+          requires:
+            - test       
           filters:
             branches:
               only:
               - branch1  
-      - test:
-          filters:
-            branches:
-              only:
-              - branch1     
+      
