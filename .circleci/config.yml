@@ -83,7 +83,7 @@ jobs:
             kubectl set image deployment/php-deployment  php-container=ndjcndcj/test:$IMAGE_TAG
             kubectl rollout status deployment/php-deployment  --timeout=2m
             kubectl get po -o wide            
-  test:
+  deploy_to_test:
     docker:
        - image: google/cloud-sdk
     steps:
@@ -95,22 +95,14 @@ workflows:
   version: 2
   test_build_deploy:
     jobs:
-      - test:
-          filters:
-            branches:
-              only:
-              - branch1     
-
       - deploy_to_master:
           filters:
             branches:
               only:
               - master
 
-      - deploy_to_branch1:
-          requires:
-            - test       
-          filters:
+      - deploy_to_test:
+           filters:
             branches:
               only:
               - branch1  
