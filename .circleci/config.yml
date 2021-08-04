@@ -82,12 +82,11 @@ jobs:
             IMAGE_TAG="php-deployment-1.${CIRCLE_BUILD_NUM}"
             kubectl set image deployment/php-deployment  php-container=ndjcndcj/test:$IMAGE_TAG
             kubectl rollout status deployment/php-deployment  --timeout=2m
-            kubectl get po -o wide       
+            kubectl get po -o wide            
   test:
-    name: test
-    command: |
-      echo "testing"              
-
+   name: test
+   command: | 
+     echo "testing"
 
 workflows:
   version: 2
@@ -98,7 +97,7 @@ workflows:
             branches:
               only:
               - master
-      
+
       - deploy_to_branch1:
           filters:
             branches:
