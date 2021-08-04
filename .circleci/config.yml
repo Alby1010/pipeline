@@ -48,8 +48,8 @@ jobs:
     steps:
       - checkout
       
-      - attach_workspace:
-          at: /home/circleci
+      #- attach_workspace:
+       #   at: /home/circleci
           
       - setup_remote_docker:
           version: 19.03.13
