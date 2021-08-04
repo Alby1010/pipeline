@@ -83,7 +83,11 @@ jobs:
             kubectl set image deployment/php-deployment  php-container=ndjcndcj/test:$IMAGE_TAG
             kubectl rollout status deployment/php-deployment  --timeout=2m
             kubectl get po -o wide            
-
+test:
+  name: test
+  command: |
+      echo "testing"
+   
 
 workflows:
   version: 2
@@ -99,4 +103,9 @@ workflows:
           filters:
             branches:
               only:
-              - branch1       
+              - branch1  
+      - test:
+          filters:
+            branches:
+              only:
+              - branch1        
