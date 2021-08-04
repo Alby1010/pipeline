@@ -87,9 +87,10 @@ jobs:
   test:
     - setup_remote_docker:
         version: 19.03.13
-    name: test
-    command: |
-      echo "testing"
+    -run:    
+       name: test
+       command: |
+         echo "testing"
    
 
 workflows:
