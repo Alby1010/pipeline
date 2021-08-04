@@ -105,5 +105,5 @@ workflows:
            filters:
             branches:
               only:
-              - branch1  
+              - master
       
