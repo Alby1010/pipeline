@@ -1,3 +1,3 @@
     <?php  
-        echo "PHP project aug 6"  
+        echo "MY PHP PROJECT"  
     ?>  
