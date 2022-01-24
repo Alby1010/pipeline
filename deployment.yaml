@@ -1,31 +1,43 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: php-deployment
+  name: hello
+  labels:
+    app: hello
 spec:
-  replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
-      app: php
+      app: hello
+      
   template:
     metadata:
       labels:
-        app: php
+        app: hello
+        tier: hello
     spec:
       containers:
-        - name: php-container
-          image: eu.gcr.io/training-318205/training-1@sha256:40c63bbeafc2a99f08f241d57205fd92ddbe52db5bd80d433dff681cfc0be945
+        - name: hello
+          image: ndjcndcj/test:latest
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 5000
+            name: hello
+
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: php-service
+  name: hello
+  labels:
+    app: hello
 spec:
-  type: NodePort
-  selector:
-    app: php
   ports:
-    - port: 80
-      targetPort: 80
-      nodePort: 30008
+    - port: 5000
+      targetPort: 5000
+  selector:
+    app: hello
+    tier: hello
+  type: LoadBalancer
